@@ -82,6 +82,24 @@ void FFTConvolver::reset()
 }
 
   
+void FFTConvolver::clearTail()
+{
+  // Deliberately mirrors only the AUDIO-HISTORY portion of reset() — never
+  // touches _segmentsIR (the loaded impulse response) or the FFT/segment
+  // sizing fields, so a subsequent process() call needs no re-init.
+  for (size_t i=0; i<_segCount; ++i)
+  {
+    _segments[i]->setZero();
+  }
+  _preMultiplied.setZero();
+  _conv.setZero();
+  _overlap.setZero();
+  _inputBuffer.setZero();
+  _inputBufferFill = 0;
+  _current = 0;
+}
+
+
 bool FFTConvolver::init(size_t blockSize, const Sample* ir, size_t irLen)
 {
   reset();

@@ -77,7 +77,20 @@ public:
   * @brief Resets the convolver and discards the set impulse response
   */
   void reset();
-  
+
+  /**
+  * @brief Clears the convolver's internal audio-history state (overlap-add
+  *        tail, input buffer, running segment position) WITHOUT discarding
+  *        the loaded impulse response (_segmentsIR is left untouched).
+  *        A subsequent process() call behaves exactly as if fed silence for
+  *        one full history window — no reload / no re-init required.
+  *        Intended for a Stop-flush: safe to call only while the caller
+  *        guarantees no concurrent process() call (i.e. off the realtime
+  *        thread while rendering is paused). No allocation — all buffers
+  *        keep their existing size and are merely zeroed.
+  */
+  void clearTail();
+
 private:
   size_t _blockSize;
   size_t _segSize;
